@@ -46,7 +46,47 @@ def get_init_list():
 
 
 def get_lodge_city(soup):
-    return soup.find('h3').text.lstrip('City - ')
+    h3 = soup.find('h3')
+    text = h3.text
+    idx = text.find('-')
+    text = text[idx + 2:]
+
+    return text
+
+
+def master_secret(soup):
+    rows_again = soup.findAll('h3')
+    master = ''
+    master_number = ''
+
+    secretary = ''
+    secretary_number = ''
+
+    for rr in rows_again:
+        parent = rr.parent
+        if rr.text == 'Worshipful Master':
+            master = parent.text.lstrip('Worshipful Master')
+            master_idx = 0
+            for i in range(len(master)):
+                if master[i].isdigit():
+                    master_idx = i
+                    break
+
+            master_number = master[master_idx:]
+            master = master[:master_idx]
+
+        if rr.text == 'Secretary':
+            secretary = parent.text.lstrip('Secretary')
+            secretary_idx = 0
+            for i in range(len(secretary)):
+                if secretary[i].isdigit():
+                    secretary_idx = i
+                    break
+
+            secretary_number = secretary[secretary_idx:]
+            secretary = secretary[:secretary_idx]
+
+    return [master, master_number, secretary, secretary_number]
 
 
 def main():
@@ -57,40 +97,14 @@ def main():
 
         name = get_lodge_name(soup)
         h3 = get_lodge_city(soup)
+        ms = master_secret(soup)
 
-        rows_again = soup.findAll('h3')
-        master = ''
-        master_number = ''
+        addr = soup.findAll('table')
+        for a in addr:
+            if a.text.find('\n \n\n \n\n') != -1:
+                print(a.text.strip())
 
-        secretary = ''
-        secretary_number = ''
-
-        for rr in rows_again:
-            parent = rr.parent
-            if rr.text == 'Worshipful Master':
-                master = parent.text.lstrip('Worshipful Master')
-                master_idx = 0
-                for i in range(len(master)):
-                    if master[i].isdigit():
-                        master_idx = i
-                        break
-
-                master_number = master[master_idx:]
-                master = master[:master_idx]
-
-
-            if rr.text == 'Secretary':
-                secretary = parent.text.lstrip('Secretary')
-                secretary_idx = 0
-                for i in range(len(secretary)):
-                    if secretary[i].isdigit():
-                        secretary_idx = i
-                        break
-
-                secretary_number = secretary[secretary_idx:]
-                secretary = secretary[:secretary_idx]
-
-        print(name, h3, 'Alabama', master, master_number, secretary, secretary_number)
+        print(h3)
 
 
 main()
