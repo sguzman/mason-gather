@@ -28,15 +28,21 @@ def get_city(text):
     return text[:comma_idx].strip()
 
 
+def get_zip(text):
+    split = text.split('AK')
+    zip_raw = split[1].split('\n')
+    return zip_raw[0].split()
+
 for r in rows:
     href = r['href']
     req = requests.get(href).text
     lodge_soup = bs4.BeautifulSoup(req, "html.parser")
+    name = get_name(lodge_soup)
+    if name == 'Mt Verstovia Lodge No. 18':
+        print('99825')
+        continue
 
     base = lodge_soup.select_one('h2.font_2')
     text = base.parent.text
-    name = get_name(lodge_soup)
 
-
-    print(text)
-
+    print()
