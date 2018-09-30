@@ -65,7 +65,7 @@ def master_secret(soup):
     for rr in rows_again:
         parent = rr.parent
         if rr.text == 'Worshipful Master':
-            master = parent.text.lstrip('Worshipful Master')
+            master = parent.text[17:]
             master_idx = 0
             for i in range(len(master)):
                 if master[i].isdigit():
@@ -76,7 +76,7 @@ def master_secret(soup):
             master = master[:master_idx]
 
         if rr.text == 'Secretary':
-            secretary = parent.text.lstrip('Secretary')
+            secretary = parent.text[9:]
             secretary_idx = 0
             for i in range(len(secretary)):
                 if secretary[i].isdigit():
@@ -89,6 +89,13 @@ def master_secret(soup):
     return [master, master_number, secretary, secretary_number]
 
 
+def address_blob(soup):
+    tmp = soup.select_one('td.pagetitle')
+    tmp_addr = list(list(list(tmp.parent.parent.parent.children)[13].children)[1])
+
+    return tmp_addr
+
+
 def main():
     rows = get_init_list()
 
@@ -99,12 +106,25 @@ def main():
         h3 = get_lodge_city(soup)
         ms = master_secret(soup)
 
-        addr = soup.findAll('table')
-        for a in addr:
-            if a.text.find('\n \n\n \n\n') != -1:
-                print(a.text.strip())
+        addr = address_blob(soup)
 
-        print(h3)
+        first = addr[0]
+
+        idx = -2
+        for i in range(len(addr)):
+            minitext = addr[i]
+
+            if type(minitext) != bs4.NavigableString:
+                continue
+
+            if minitext.find('AL') != -1:
+                idx = i
+                break
+
+        split = addr[idx].split('AL')
+        zip = split[-1].strip()
+
+        print(zip)
 
 
 main()
