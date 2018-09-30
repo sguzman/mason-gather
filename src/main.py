@@ -52,14 +52,9 @@ def scrape_width(soup, width):
         clean_empty_lines(split)
 
         last_idx = phone_idx(split)
-
         number = split[last_idx].strip()
-        if number == '1707 Ponce de Leon Ave.':
-            continue
-
         site = split[last_idx + 1].strip()
-
-        addr_str = ','.join(split[:last_idx])
+        addr_str = '\n'.join(split[:last_idx])
 
         addr = usaddress.tag(addr_str)
         lodges.append((number, site, addr))
@@ -79,7 +74,6 @@ def main():
         lodges = scrape_width(soup, w)
         grand_lodges.extend(lodges)
 
-    print(len(grand_lodges))
     for g in grand_lodges:
         print(g)
 
