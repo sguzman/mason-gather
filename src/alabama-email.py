@@ -25,7 +25,10 @@ for i in range(65, 91):
         person_soup = bs4.BeautifulSoup(person_req.text, 'html.parser')
 
         para = person_soup.select_one('p > a > span')
-        name = para.text
-        print(name)
+        if para is None:
+            print('')
+        else:
+            name = para.text
+            print(name)
 
 
